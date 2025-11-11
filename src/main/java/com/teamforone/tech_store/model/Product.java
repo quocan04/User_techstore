@@ -59,6 +59,8 @@ public class Product {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt;
+    @Column(name = "price", nullable = false)
+    private Double price;
 
     public enum Status {
         DRAFT,
