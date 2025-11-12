@@ -1,0 +1,88 @@
+<div th:replace="~{layouts/main :: layout (~{::content})}">
+
+    <div th:fragment="content">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="list-group">
+                    <a th:href="@{/userl/profile}" class="list-group-item list-group-item-action">Hồ sơ</a>
+                    <a th:href="@{/userl/address}" class="list-group-item list-group-item-action active">Sổ địa chỉ</a>
+                    <a th:href="@{/userl/change-password}" class="list-group-item list-group-item-action">Đổi mật khẩu</a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="card mb-4">
+                    <div class="card-header bg-danger text-white d-flex justify-content-between">
+                        <h5>Sổ địa chỉ</h5>
+                        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                            + Thêm địa chỉ
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div th:each="addr : ${addresses}" class="border p-3 mb-3 rounded">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong th:text="${addr.recipientName}"></strong>
+                                    <span th:if="${addr.isDefault}" class="badge bg-success ms-2">Mặc định</span>
+                                    <p class="mb-1" th:text="${addr.phone}"></p>
+                                    <p class="mb-0 text-muted" th:text="${addr.street + ', ' + addr.ward + ', ' + addr.district + ', ' + addr.city}"></p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline-primary btn-sm">Sửa</button>
+                                    <button class="btn btn-outline-danger btn-sm">Xóa</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="addAddressModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/userl/address/add}" th:object="${newAddress}" method="post">
+                        <div class="modal-header">
+                            <h5>Thêm địa chỉ mới</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label>Họ tên người nhận</label>
+                                <input type="text" class="form-control" th:field="*{recipientName}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>Số điện thoại</label>
+                                <input type="text" class="form-control" th:field="*{phone}" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label>Phường/Xã</label>
+                                    <input type="text" class="form-control" th:field="*{ward}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label>Quận/Huyện</label>
+                                    <input type="text" class="form-control" th:field="*{district}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label>Tỉnh/Thành phố</label>
+                                <input type="text" class="form-control" th:field="*{city}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>Số nhà, đường</label>
+                                <input type="text" class="form-control" th:field="*{street}" required>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" th:field="*{isDefault}">
+                                <label class="form-check-label">Đặt làm địa chỉ mặc định</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Lưu địa chỉ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

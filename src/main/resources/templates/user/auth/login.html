@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập - Team For One</title>
+    <style>
+        /* Tái sử dụng CSS từ file mẫu */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f9f9f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .login-container {
+            width: 100%; max-width: 400px;
+            background-color: white; padding: 40px;
+            border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .login-container h2 {
+            text-align: center; color: #0078d7; margin-bottom: 30px;
+            font-size: 2rem; border-bottom: none;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-control {
+            width: 100%; padding: 12px; border: 1px solid #ccc;
+            border-radius: 4px; font-size: 1rem;
+        }
+        .btn-primary {
+            width: 100%; padding: 12px; background-color: #0078d7;
+            color: white; border: none; border-radius: 4px;
+            font-size: 1.1rem; cursor: pointer; transition: background-color 0.3s;
+        }
+        .btn-primary:hover { background-color: #005fa3; }
+        .alert-error { color: #d9534f; background-color: #f2dede; border: 1px solid #ebccd1; padding: 10px; border-radius: 4px; margin-bottom: 20px; }
+        .text-center { text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>Đăng nhập</h2>
+
+    <div th:if="${param.error}" class="alert-error">
+        Email hoặc mật khẩu không đúng.
+    </div>
+
+    <form th:action="@{/login}" method="post">
+        <div class="form-group">
+            <label for="username">Email:</label>
+            <input type="email" id="username" name="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Mật khẩu:</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn-primary">Đăng nhập</button>
+    </form>
+
+    <div class="text-center">
+        <a th:href="@{/register}">Chưa có tài khoản? Đăng ký ngay</a>
+    </div>
+</div>
+</body>
+</html>
