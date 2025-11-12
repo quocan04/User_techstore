@@ -135,11 +135,11 @@
     <h2>Sản phẩm nổi bật</h2>
     <div class="products-grid">
         <a th:each="product : ${products}" th:href="@{'/product/' + ${product.id}}" class="product-card">
-            <img th:src="@{'/images/' + ${product.imageUrl}}" alt="Hình ảnh sản phẩm" class="product-image" />
-            <div class="product-info">
-                <h3 th:text="${product.name}">Tên sản phẩm</h3>
-                <p class="price" th:text="${#numbers.formatDecimal(product.price, 0, 0)} + '₫'">0₫</p>
-            </div>
+            <img th:src="@{${product.imageUrl}}" alt="Hình ảnh sản phẩm" class="product-image">
+            <h3 th:text="${product.name}"></h3>
+            <p class="price" th:text="${#numbers.formatDecimal(product.price, 0, 0)} + ' ₫'"></p>
+
+    </div>
         </a>
     </div>
 </main>

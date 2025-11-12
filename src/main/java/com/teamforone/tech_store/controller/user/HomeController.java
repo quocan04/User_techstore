@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import com.teamforone.tech_store.model.Product;
 
 @Controller
 public class HomeController {
@@ -17,4 +19,5 @@ public class HomeController {
         model.addAttribute("products", productService.getAllProducts());
         return "user/home";
     }
+
 }

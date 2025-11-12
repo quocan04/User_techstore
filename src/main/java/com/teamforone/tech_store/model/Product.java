@@ -61,6 +61,10 @@ public class Product {
     private Date updatedAt;
     @Column(name = "price", nullable = false)
     private Double price;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+    private Categories category;
+
 
     public enum Status {
         DRAFT,

@@ -26,4 +26,7 @@ public class Categories {
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private Categories parentCategory;
+
+    @Column(name = "slug", nullable = false, unique = true)
+    private String slug;
 }
