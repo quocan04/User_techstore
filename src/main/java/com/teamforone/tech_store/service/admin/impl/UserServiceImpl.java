@@ -1,9 +1,8 @@
 package com.teamforone.tech_store.service.admin.impl;
 
 import com.teamforone.tech_store.model.User;
-import com.teamforone.tech_store.repository.admin.UserRepository;
+import com.teamforone.tech_store.repository.user.UserRepository;
 import com.teamforone.tech_store.service.admin.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
