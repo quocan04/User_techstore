@@ -10,7 +10,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -22,7 +21,7 @@ public class User {
     @Id
     @UuidGenerator
     @Column(name = "user_id", columnDefinition = "CHAR(36)")
-    private String id;
+    private String userId;  // ← Đổi từ id → userId (để khớp với UserRepository)
 
     @Column(name = "username", nullable = false, unique = true)
     private String username;
@@ -53,13 +52,6 @@ public class User {
 
     public enum Status {
         ACTIVE,
-        LOCKED;
-
-        private static Status toEnum(String status) {
-            for (Status item : values()) {
-                if (item.toString().equalsIgnoreCase(status)) return item;
-            }
-            return null;
-        }
+        LOCKED
     }
 }

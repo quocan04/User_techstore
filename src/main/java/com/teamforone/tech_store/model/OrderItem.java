@@ -1,65 +1,65 @@
 package com.teamforone.tech_store.model;
 
+
+// --- Imports (Rất quan trọng) ---
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Entity
+@Table(name = "order_items") // Ánh xạ tới bảng 'order_items'
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "order_items")
+@AllArgsConstructor
 public class OrderItem {
+
     @Id
-    @UuidGenerator
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "order_item_id", columnDefinition = "CHAR(36)")
-    private String orderItemID;
+    private String orderItemId; // Kiểu String vì là CHAR(36)
 
-    @JoinColumn(name = "order_id", nullable = false, columnDefinition = "CHAR(36)")
-    private String order;
+    /**
+     * Quan hệ n-1 với Orders.
+     * Nhiều OrderItem thuộc về 1 Order.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Orders order;
 
-    @JoinColumn(name = "colorID", nullable = false, columnDefinition = "CHAR(36)")
-    private String color;
+    // Giả định bạn cũng muốn liên kết tới Product (dù SQL không có FK trực tiếp)
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "product_id") // Cần thêm cột product_id vào SQL
+    // private Product product;
 
-    @JoinColumn(name = "sizeID", nullable = false, columnDefinition = "CHAR(36)")
-    private String displaySize;
+    // Các ID cho chi tiết sản phẩm (như trong SQL)
+    @Column(name = "colorID", columnDefinition = "CHAR(36)")
+    private String colorID;
 
-    @JoinColumn(name = "storageID", nullable = false, columnDefinition = "CHAR(36)")
-    private String storage;
+    @Column(name = "sizeID", columnDefinition = "CHAR(36)")
+    private String sizeID;
 
-    @Column(name = "quantity", columnDefinition = "INT DEFAULT 1 CHECK (quantity > 0)")
-    private Integer quantity;
+    @Column(name = "storageID", columnDefinition = "CHAR(36)")
+    private String storageID;
 
-    @Column(name = "subtotal", precision = 10, scale = 2)
-    private BigDecimal subTotal;
+    @Column(name = "quantity")
+    private int quantity;
 
+    @Column(name = "subtotal", precision = 10, scale = 2, nullable = false)
+    private BigDecimal subtotal;
+
+    /**
+     * Trạng thái của mục đơn hàng.
+     * Dùng @Enumerated(EnumType.STRING) để lưu tên (PAID, PENDING...)
+     */
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "ENUM('PENDING','SHIPPED','DELIVERED','RETURNED','PAID','PROCESSING','CANCELLED') DEFAULT 'PENDING'")
-    private OrderItemStatus status;
-
-    public enum OrderItemStatus {
-        PENDING,
-        SHIPPED,
-        DELIVERED,
-        RETURNED,
-        PAID,
-        PROCESSING,
-        CANCELLED;
-
-        private static OrderItemStatus toEnum(String status) {
-            for (OrderItemStatus item : values()) {
-                if (item.toString().equalsIgnoreCase(status)) return item;
-            }
-            return null;
-        }
-    }
+    @Column(name = "order_status")
+    private OrderStatus orderStatus;
 }
