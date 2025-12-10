@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
+import com.teamforone.tech_store.model.Cart;
 
 import java.util.Date;
 import java.util.UUID;
@@ -25,8 +26,9 @@ public class CartItem {
     @Column(name = "item_id", columnDefinition = "CHAR(36)")
     private String cartItemID;
 
-    @JoinColumn(name = "cart_id", nullable = false, columnDefinition = "CHAR(36)")
-    private String cart;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id", columnDefinition = "CHAR(36)")
+    private Cart cart;
 
     @JoinColumn(name = "product_id", nullable = false, columnDefinition = "CHAR(36)")
     private String product;

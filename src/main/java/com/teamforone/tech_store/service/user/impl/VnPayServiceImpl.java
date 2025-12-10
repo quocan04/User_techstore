@@ -2,7 +2,7 @@ package com.teamforone.tech_store.service.user.impl;
 
 // --- Imports ---
 import com.teamforone.tech_store.model.Payment;
-import com.teamforone.tech_store.repository.user.PaymentRepository;
+import com.teamforone.tech_store.repository.admin.crud.user.PaymentRepository;
 import com.teamforone.tech_store.service.user.VnPayService;
 
 import org.springframework.beans.factory.annotation.Autowired;

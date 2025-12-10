@@ -23,8 +23,10 @@ public class Cart {
     @Column(name = "cart_id", columnDefinition = "CHAR(36)")
     private String cartID;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, columnDefinition = "CHAR(36)")
-    private String user;
+    private User user;
+
 
     @CreationTimestamp
     @Column(name = "created_at")

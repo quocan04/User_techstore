@@ -1,6 +1,6 @@
 package com.teamforone.tech_store.controller.user;
 
-import com.teamforone.tech_store.service.user.ProductService;
+import com.teamforone.tech_store.service.admin.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
