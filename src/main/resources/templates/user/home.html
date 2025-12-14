@@ -246,29 +246,36 @@
 
 <nav>
     <div class="nav-links">
-        <a href="/category/dien-thoai-phu-kien" th:href="@{/category/dien-thoai-phu-kien}">Điện thoại & Phụ kiện</a>
-        <a href="/category/laptop" th:href="@{/category/laptop}">Laptop</a>
-        <a href="/category/tablet" th:href="@{/category/tablet}">Tablet</a>
-        <a href="/category/dong-ho-thong-minh" th:href="@{/category/dong-ho-thong-minh}">Đồng hồ thông minh</a>
-        <a href="/category/phu-kien-am-thanh" th:href="@{/category/phu-kien-am-thanh}">Phụ kiện âm thanh</a>
-        <a href="/category/pc-linh-kien" th:href="@{/category/pc-linh-kien}">PC & Linh kiện</a>
-        <a href="/category/thiet-bi-mang" th:href="@{/category/thiet-bi-mang}">Thiết bị mạng</a>
+        <a th:href="@{/category/dien-thoai-phu-kien}">Điện thoại</a>
+        <a th:href="@{/category/laptop}">Laptop</a>
+        <a th:href="@{/category/tablet}">Tablet</a>
+        <a th:href="@{/category/dong-ho-thong-minh}">Đồng hồ</a>
 
         <div class="dropdown">
             <a href="#" class="dropbtn">Thống kê ▾</a>
             <div class="dropdown-content">
-                <a data-url="/stats/best-sellers/daily" onclick="navigate(this)">Sản phẩm bán chạy trong ngày</a>
-                <a data-url="/stats/best-sellers/monthly" onclick="navigate(this)">Sản phẩm bán chạy trong tháng</a>
-                <a data-url="/stats/best-sellers/quarterly" onclick="navigate(this)">Sản phẩm bán chạy trong quý</a>
-                <a data-url="/stats/best-sellers/yearly" onclick="navigate(this)">Sản phẩm hot nhất năm</a>
+                <a th:href="@{/stats/best-sellers/daily}">Bán chạy hôm nay</a>
+                <a th:href="@{/stats/best-sellers/monthly}">Bán chạy tháng</a>
+                <a th:href="@{/stats/best-sellers/yearly}">Hot nhất năm</a>
             </div>
         </div>
     </div>
 
     <form class="search-bar" th:action="@{/search}" method="get">
-        <input type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." required>
+        <input type="text" name="keyword" placeholder="Tìm kiếm..." required>
         <button type="submit">🔍</button>
     </form>
+
+    <div class="nav-actions">
+        <a th:href="@{/cart}" class="nav-icon"> Giỏ hàng
+            🛒
+            <span class="cart-badge" th:if="${cartCount != null}" th:text="${cartCount}">0</span>
+        </a>
+
+        <a th:href="@{/profile}" class="nav-icon">Hồ sơ cá nhân👤</a>
+
+        <a th:href="@{/logout}" class="nav-icon">Đăng xuất🚪</a>
+    </div>
 </nav>
 
 <main>
@@ -415,6 +422,42 @@
     .footer-bottom p {
         margin: 0;
         font-size: 0.9rem;
+    }
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        margin-left: 20px;
+    }
+
+    /* Link chứa icon + text */
+    .nav-icon {
+        display: flex;
+        align-items: center;
+        gap: 6px;              /* khoảng cách icon - chữ */
+        font-size: 1rem;       /* size chữ */
+        font-weight: 500;
+        color: white;
+        text-decoration: none;
+        cursor: pointer;
+        position: relative;
+        transition: opacity 0.2s ease;
+    }
+
+    /* Icon riêng */
+    .nav-icon .icon {
+        font-size: 1.4rem;     /* size icon */
+        transition: transform 0.2s ease;
+    }
+
+    /* Hover: chỉ icon phóng to */
+    .nav-icon:hover .icon {
+        transform: scale(1.2);
+    }
+
+    /* Hover nhẹ cho text */
+    .nav-icon:hover {
+        opacity: 0.9;
     }
     @media (max-width: 768px) {
         .footer-columns {
