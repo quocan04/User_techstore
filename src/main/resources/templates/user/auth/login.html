@@ -3,58 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <title>Đăng nhập - Team For One</title>
+
     <style>
-        /* Tái sử dụng CSS từ file mẫu */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f9f9f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f4f6f8;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
         .login-container {
-            width: 100%; max-width: 400px;
-            background-color: white; padding: 40px;
-            border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 380px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
         }
-        .login-container h2 {
-            text-align: center; color: #0078d7; margin-bottom: 30px;
-            font-size: 2rem; border-bottom: none;
+        h2 {
+            text-align: center;
+            color: #0078d7;
+            margin-bottom: 25px;
         }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+        }
         .form-control {
-            width: 100%; padding: 12px; border: 1px solid #ccc;
-            border-radius: 4px; font-size: 1rem;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
         }
         .btn-primary {
-            width: 100%; padding: 12px; background-color: #0078d7;
-            color: white; border: none; border-radius: 4px;
-            font-size: 1.1rem; cursor: pointer; transition: background-color 0.3s;
+            width: 100%;
+            padding: 12px;
+            background: #0078d7;
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
         }
-        .btn-primary:hover { background-color: #005fa3; }
-        .alert-error { color: #d9534f; background-color: #f2dede; border: 1px solid #ebccd1; padding: 10px; border-radius: 4px; margin-bottom: 20px; }
-        .text-center { text-align: center; margin-top: 15px; }
+        .btn-primary:hover {
+            background: #005fa3;
+        }
+        .alert {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+        .alert-error {
+            background: #ffe5e5;
+            border: 1px solid #ffb3b3;
+            color: #d80000;
+        }
+        .alert-success {
+            background: #e6ffed;
+            border: 1px solid #a0ffb6;
+            color: #008a2e;
+        }
+        .text-center { text-align: center; margin-top: 12px; }
     </style>
+
 </head>
 <body>
+
 <div class="login-container">
+
     <h2>Đăng nhập</h2>
 
-    <div th:if="${param.error}" class="alert-error">
-        Email hoặc mật khẩu không đúng.
+    <!-- Thông báo lỗi -->
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <!-- Đăng xuất -->
+    <div th:if="${param.logout}" class="alert alert-success">
+        Bạn đã đăng xuất thành công!
     </div>
 
-    <form th:action="@{/login}" method="post">
+    <form th:action="@{/auth/dangnhap}" method="post">
+
         <div class="form-group">
-            <label for="username">Email:</label>
-            <input type="email" id="username" name="username" class="form-control" required>
+            <label>Email:</label>
+            <input type="email" class="form-control" name="username"
+                   th:value="${email != null ? email : ''}" required>
         </div>
+
         <div class="form-group">
-            <label for="password">Mật khẩu:</label>
-            <input type="password" id="password" name="password" class="form-control" required>
+            <label>Mật khẩu:</label>
+            <input type="password" class="form-control" name="password" required>
         </div>
-        <button type="submit" class="btn-primary">Đăng nhập</button>
+
+        <button class="btn-primary" type="submit">Đăng nhập</button>
     </form>
 
     <div class="text-center">
-        <a th:href="@{/register}">Chưa có tài khoản? Đăng ký ngay</a>
+        <a th:href="@{/auth/register}">Chưa có tài khoản? Đăng ký ngay</a>
     </div>
 </div>
+
 </body>
 </html>

@@ -56,8 +56,6 @@ public class User {
     @Column(name = "phone", nullable = false, unique = true)
     private String phone;
 
-    // Avatar
-    private String avatar;
 
     // Trạng thái (Enum)
     @Enumerated(EnumType.STRING)
@@ -73,7 +71,7 @@ public class User {
     @Column(name = "created_at")
     private Date createdAt;
 
-    // Thời gian cập nhật
+
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt;

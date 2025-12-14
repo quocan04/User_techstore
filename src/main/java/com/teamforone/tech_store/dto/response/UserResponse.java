@@ -16,7 +16,7 @@ public class UserResponse {
     private String email;
     private String fullName;
     private String phone;
-    private String avatar;
+
     private List<AddressResponse> addresses;
 
     // Constructor từ Entity (nếu cần map)
@@ -25,7 +25,6 @@ public class UserResponse {
         this.email = user.getEmail();
         this.fullName = user.getFullName();
         this.phone = user.getPhone();
-        this.avatar = user.getAvatar();
         this.addresses = user.getAddresses().stream()
                 .map(AddressResponse::new)
                 .toList();

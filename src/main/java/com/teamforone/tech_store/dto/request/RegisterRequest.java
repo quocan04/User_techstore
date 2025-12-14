@@ -18,7 +18,10 @@ public class RegisterRequest {
     private String confirmPassword;
 
     @NotBlank
-    private String fullName;
+    private String fullname;
+
+    @NotBlank
+    private String username;
 
     @NotBlank
     @Pattern(regexp = "^\\d{10,11}$", message = "SĐT không hợp lệ")
