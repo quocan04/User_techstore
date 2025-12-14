@@ -23,7 +23,7 @@ public class PhoneSpecs {
     @Column(name = "spec_id", columnDefinition = "CHAR(36)")
     private String phoneSpecsID;
 
-    @Column(name = "product_id", nullable = false, columnDefinition = "CHAR(36)", unique = true)
+    @JoinColumn(name = "product_id", nullable = false, columnDefinition = "CHAR(36)", unique = true)
     private String productID;
 
     @OneToOne

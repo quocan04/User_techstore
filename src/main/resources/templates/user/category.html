@@ -1,170 +1,442 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team For One - Sản phẩm theo danh mục</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Team For One - Cửa hàng công nghệ</title>
     <style>
-        /* Reset cơ bản */
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            margin: 0; padding: 0; box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         body {
             background-color: #f9f9f9;
             color: #333;
             line-height: 1.6;
         }
-
-        /* Navbar */
-        nav {
+        header {
             background-color: #0078d7;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
-
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            margin-right: 20px;
-            font-weight: 500;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        nav .logo {
-            font-size: 1.5rem;
+        header h1 {
             font-weight: 700;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+        }
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        /* Thanh menu */
+        nav {
+            background-color: #005fa3;
+            display: flex;
+            justify-content: space-between; /* Tách menu và search */
+            align-items: center;
+            padding: 12px 30px;
+            flex-wrap: wrap;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
 
+        .nav-links {
+            display: flex;
+            /* Giảm gap để chứa được nhiều mục hơn */
+            gap: 20px;
+            /* Cho phép xuống dòng nếu cần trên màn hình nhỏ */
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            background-color: white;
+            bottom: -5px;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Thanh tìm kiếm */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            padding: 2px 5px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            padding: 8px 12px;
+            font-size: 1rem;
+            width: 200px;
+        }
+
+        .search-bar button {
+            border: none;
+            background-color: #0078d7;
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background-color: #005fa3;
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+            .search-bar input {
+                width: 100%;
+            }
+        }
         main {
             max-width: 1200px;
             margin: 30px auto;
             padding: 0 20px;
         }
-
         h2 {
             margin-bottom: 20px;
             font-size: 2rem;
             border-bottom: 3px solid #0078d7;
             padding-bottom: 8px;
-            text-transform: capitalize;
         }
-
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
         }
-
         .product-card {
-            background-color: #fff;
+            background-color: white;
             border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             overflow: hidden;
+            transition: transform 0.2s ease;
             text-decoration: none;
             color: inherit;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-
         .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transform: translateY(-6px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
-
         .product-image {
             width: 100%;
-            height: 180px;
-            object-fit: cover;
-            display: block;
+            aspect-ratio: 1 / 1; /* hoặc 4 / 3 tùy bạn muốn ảnh vuông hay chữ nhật */
+            object-fit: contain;
+            background-color: #fff;
+            padding: 5px;
         }
-
         .product-info {
-            padding: 15px;
+            padding: 15px 20px;
         }
-
         .product-info h3 {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             margin-bottom: 10px;
-        }
-
-        .product-info p.price {
-            color: #0078d7;
-            font-weight: 700;
-            font-size: 1.1rem;
         }
 
         footer {
             margin-top: 50px;
             padding: 20px;
             background-color: #0078d7;
-            color: #fff;
+            color: white;
             text-align: center;
-            border-radius: 6px;
+            border-radius: 6px 6px 0 0;
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            nav {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            nav a {
-                margin-bottom: 10px;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            .product-image {
-                height: 150px;
-            }
+        /* === CSS MỚI CHO DROP-DOWN === */
+        .dropdown {
+            position: relative;
+            display: inline-block;
         }
+
+        .dropdown .dropbtn {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+            padding: 0;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #005fa3;
+            min-width: 280px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3);
+            z-index: 1000;
+            border-radius: 4px;
+            top: 100%;
+            left: -50px;
+            padding: 10px 0;
+        }
+
+        .dropdown-content a {
+            color: white !important;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            white-space: nowrap;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #0078d7;
+            width: 100%;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown .dropbtn::after {
+            content: none !important;
+        }
+        .dropdown:hover .dropbtn::after {
+            content: '';
+            width: 100%;
+        }
+        /* === KẾT THÚC CSS MỚI === */
     </style>
 </head>
 <body>
+
+<header>
+    <h1>Team For One</h1>
+    <p>Cửa hàng đồ công nghệ hàng đầu</p>
+</header>
+
 <nav>
-    <div class="logo"><a th:href="@{/home}">Team For One</a></div>
     <div class="nav-links">
-        <a th:href="@{/home}">Home</a>
-        <a th:href="@{/category/smartphones}">Smartphones</a>
-        <a th:href="@{/category/headphones}">Headphones</a>
-        <a th:href="@{/category/bluetooths}">Bluetooths</a>
-        <a th:href="@{/category/laptop}">Laptop</a>
-    </div>
-</nav>
 
-<main>
-    <h2 th:text="${categoryName != null ? categoryName : categorySlug}">Danh mục</h2>
+        <a href="/category/dien-thoai-phu-kien" th:href="@{/category/dien-thoai-phu-kien}">Điện thoại & Phụ kiện</a>
+        <a href="/category/laptop" th:href="@{/category/laptop}">Laptop</a>
+        <a href="/category/tablet" th:href="@{/category/tablet}">Tablet</a>
+        <a href="/category/dong-ho-thong-minh" th:href="@{/category/dong-ho-thong-minh}">Đồng hồ thông minh</a>
+        <a href="/category/phu-kien-am-thanh" th:href="@{/category/phu-kien-am-thanh}">Phụ kiện âm thanh</a>
+        <a href="/category/pc-linh-kien" th:href="@{/category/pc-linh-kien}">PC & Linh kiện</a>
+        <a href="/category/thiet-bi-mang" th:href="@{/category/thiet-bi-mang}">Thiết bị mạng</a>
 
-    <div class="products-grid" th:if="${products != null and products.size() > 0}">
-        <div th:each="product : ${products}">
-            <a th:href="@{'/product/' + ${product.id}}" class="product-card">
-                <img th:src="@{${product.imageUrl}}" alt="Hình ảnh sản phẩm" class="product-image">
-                <div class="product-info">
-                    <h3 th:text="${product.name}">Tên sản phẩm</h3>
-                    <p class="price" th:text="${#numbers.formatDecimal(product.price, 0, 0)} + ' ₫'"></p>
-                </div>
-            </a>
+        <div class="dropdown">
+            <a href="#" class="dropbtn">Thống kê ▾</a>
+            <div class="dropdown-content">
+                <a data-url="/stats/best-sellers/daily" onclick="navigate(this)">Sản phẩm bán chạy trong ngày</a>
+                <a data-url="/stats/best-sellers/monthly" onclick="navigate(this)">Sản phẩm bán chạy trong tháng</a>
+                <a data-url="/stats/best-sellers/quarterly" onclick="navigate(this)">Sản phẩm bán chạy trong quý</a>
+                <a data-url="/stats/best-sellers/yearly" onclick="navigate(this)">Sản phẩm hot nhất năm</a>
+            </div>
         </div>
     </div>
 
-    <div th:if="${products == null or products.size() == 0}">
-        <p>Chưa có sản phẩm nào trong danh mục này.</p>
+    <form class="search-bar" th:action="@{/search}" method="get">
+        <input type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." required>
+        <button type="submit">🔍</button>
+    </form>
+</nav>
+
+<main>
+    <h2 th:if="${statsTitle}" th:text="${statsTitle}"></h2>
+    <h2 th:if="${keyword}" th:text="'Kết quả tìm kiếm cho: ' + ${keyword}"></h2>
+    <h2 th:if="${keyword == null and statsTitle == null}">Sản phẩm nổi bật</h2>
+
+    <div class="products-grid">
+        <a th:each="product : ${products}" th:href="@{'/product/' + ${product.id}}" class="product-card">
+            <img th:src="@{${product.imageUrl}}"
+                 alt="Hình ảnh sản phẩm"
+                 class="product-image">
+            <h3 th:text="${product.name}"></h3>
+        </a>
     </div>
+
+    <p th:if="${#lists.isEmpty(products)}" style="margin-top:20px; text-align:center; color:#555;">
+        Không tìm thấy sản phẩm nào phù hợp.
+    </p>
 </main>
 
-<footer>
-    <p>&copy; 2025 Team For One. All rights reserved.</p>
+<footer class="site-footer">
+    <div class="footer-top">
+        <div class="container">
+            <div class="footer-columns">
+                <div class="footer-col">
+                    <h4>Hỗ trợ khách hàng</h4>
+                    <ul>
+                        <li><a th:href="@{/help/shipping}">Vận chuyển – giao hàng</a></li>
+                        <li><a th:href="@{/help/return}">Đổi / trả hàng</a></li>
+                        <li><a th:href="@{/help/faq}">Câu hỏi thường gặp</a></li>
+                        <li><a th:href="@{/contact}">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Về Team For One</h4>
+                    <ul>
+                        <li><a th:href="@{/about}">Giới thiệu</a></li>
+                        <li><a th:href="@{/policy/privacy}">Chính sách bảo mật</a></li>
+                        <li><a th:href="@{/policy/terms}">Điều khoản sử dụng</a></li>
+                        <li><a th:href="@{/jobs}">Tuyển dụng</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Kết nối với chúng tôi</h4>
+                    <ul class="social-links">
+                        <li><a href="https://www.facebook.com/yourpage" target="_blank">Facebook</a></li>
+                        <li><a href="https://www.instagram.com/yourpage" target="_blank">Instagram</a></li>
+                        <li><a href="https://www.youtube.com/yourchannel" target="_blank">YouTube</a></li>
+                    </ul>
+                    <div class="newsletter">
+                        <h5>Đăng ký nhận tin</h5>
+                        <form th:action="@{/newsletter/subscribe}" method="post">
+                            <input type="email" name="email" placeholder="Email của bạn" required>
+                            <button type="submit">Đăng ký</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Thông tin liên hệ</h4>
+                    <ul class="contact-info">
+                        <li>📍 Địa chỉ: 1234 Đường ABC, Phường XYZ, TP.HCM</li>
+                        <li>📞 Hotline: 1800-1234</li>
+                        <li>✉️ Email: support@teamforone.vn</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="container">
+            <p>&copy; 2025 Team For One. All rights reserved. – Thiết kế bởi Team For One</p>
+        </div>
+    </div>
 </footer>
+
+<style>
+    .site-footer {
+        background-color: #0078d7;
+        color: white;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .site-footer a {
+        color: #f3f4f6;
+        text-decoration: none;
+    }
+    .site-footer a:hover {
+        color: #e4e6e8;
+    }
+    .site-footer .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 40px 20px;
+    }
+    .footer-columns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+    .footer-col {
+        flex: 1 1 220px;
+    }
+    .footer-col h4 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    .footer-col ul {
+        list-style: none;
+    }
+    .footer-col ul li {
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+    }
+    .social-links li {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .newsletter {
+        margin-top: 15px;
+    }
+    .newsletter input[type="email"] {
+        width: calc(100% - 110px);
+        padding: 8px 10px;
+        border: none;
+        border-radius: 4px 0 0 4px;
+    }
+    .newsletter button {
+        padding: 9px 15px;
+        border: none;
+        background-color: #d70018;
+        color: white;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        transition: background-color .3s ease;
+    }
+    .newsletter button:hover {
+        background-color: #b10015;
+    }
+    .footer-bottom {
+        text-align: center;
+        padding: 15px 20px;
+        background-color: #005fa3;
+    }
+    .footer-bottom p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    @media (max-width: 768px) {
+        .footer-columns {
+            flex-direction: column;
+        }
+        .newsletter input[type="email"] {
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .newsletter button {
+            width: 100%;
+            border-radius: 4px;
+        }
+    }
+</style>
+
+<script>
+    function navigate(element) {
+        // Lấy đường dẫn từ thuộc tính data-url
+        const url = element.getAttribute('data-url');
+        if (url) {
+            // Chuyển hướng trình duyệt đến URL đó
+            window.location.href = url;
+        }
+    }
+</script>
+
 </body>
 </html>

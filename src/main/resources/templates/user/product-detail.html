@@ -57,8 +57,13 @@
 
 <main>
     <div class="product-container">
-        <div class="product-image">
-            <img th:src="@{${product.imageUrl}}" alt="Hình ảnh sản phẩm" class="product-image">
+        <div class="products-grid">
+            <a th:each="product : ${products}" th:href="@{'/product/' + ${product.id}}" class="product-card">
+                <img th:src="@{${product.imageUrl}}"
+                     alt="Hình ảnh sản phẩm"
+                     class="product-image">
+                <h3 th:text="${product.name}"></h3>
+            </a>
         </div>
 
         <div class="product-info">
@@ -75,100 +80,100 @@
                 <p th:text="${product.description}"></p>
             </div>
 
-            <p th:text="${specs}">Test specs</p>
             <div class="specs" th:if="${specs != null}">
                 <h3>Thông số kỹ thuật</h3>
                 <table class="spec-table">
-                    <tr>
+                    <tr th:if="${specs.displaySize != null}">
                         <td>Màn hình</td>
-                        <td th:text="${specs.displaySize != null ? specs.displaySize.sizeInch + ' inch' : 'Chưa có'}"></td>
+                        <td th:text="${specs.displaySize.sizeInch + ' inch'}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.storage != null}">
                         <td>Bộ nhớ</td>
-                        <td th:text="${specs.storage != null ? specs.storage.capacity : 'Chưa có'}"></td>
+                        <td th:text="${specs.storage.capacity}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.chipset != null}">
                         <td>Chipset</td>
-                        <td th:text="${specs.chipset != null ? specs.chipset : 'Chưa có'}"></td>
+                        <td th:text="${specs.chipset}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.cpu != null}">
                         <td>CPU</td>
-                        <td th:text="${specs.cpu != null ? specs.cpu : 'Chưa có'}"></td>
+                        <td th:text="${specs.cpu}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.gpu != null}">
                         <td>GPU</td>
-                        <td th:text="${specs.gpu != null ? specs.gpu : 'Chưa có'}"></td>
+                        <td th:text="${specs.gpu}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.rearCameraMain != null}">
                         <td>Camera sau</td>
-                        <td th:text="${specs.rearCameraMain != null ? specs.rearCameraMain : 'Chưa có'}"></td>
+                        <td th:text="${specs.rearCameraMain}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.rearCameraUltraWide != null}">
                         <td>Camera siêu rộng</td>
-                        <td th:text="${specs.rearCameraUltraWide != null ? specs.rearCameraUltraWide : 'Chưa có'}"></td>
+                        <td th:text="${specs.rearCameraUltraWide}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.frontCamera != null}">
                         <td>Camera trước</td>
-                        <td th:text="${specs.frontCamera != null ? specs.frontCamera : 'Chưa có'}"></td>
+                        <td th:text="${specs.frontCamera}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.batteryCapacity != null}">
                         <td>Pin</td>
-                        <td th:text="${specs.batteryCapacity != null ? specs.batteryCapacity : 'Chưa có'}"></td>
+                        <td th:text="${specs.batteryCapacity}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.chargingTechnology != null}">
                         <td>Công nghệ sạc</td>
-                        <td th:text="${specs.chargingTechnology != null ? specs.chargingTechnology : 'Chưa có'}"></td>
+                        <td th:text="${specs.chargingTechnology}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.operatingSystem != null}">
                         <td>Hệ điều hành</td>
-                        <td th:text="${specs.operatingSystem != null ? specs.operatingSystem : 'Chưa có'}"></td>
+                        <td th:text="${specs.operatingSystem}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.simType != null}">
                         <td>Sim</td>
-                        <td th:text="${specs.simType != null ? specs.simType : 'Chưa có'}"></td>
+                        <td th:text="${specs.simType}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.networkSupport != null}">
                         <td>Mạng</td>
-                        <td th:text="${specs.networkSupport != null ? specs.networkSupport : 'Chưa có'}"></td>
+                        <td th:text="${specs.networkSupport}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.nfc != null}">
                         <td>NFC</td>
-                        <td th:text="${specs.nfc != null ? (specs.nfc ? 'Có' : 'Không') : 'Chưa có'}"></td>
+                        <td th:text="${specs.nfc ? 'Có' : 'Không'}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.wifi != null}">
                         <td>WiFi</td>
-                        <td th:text="${specs.wifi != null ? specs.wifi : 'Chưa có'}"></td>
+                        <td th:text="${specs.wifi}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.bluetooth != null}">
                         <td>Bluetooth</td>
-                        <td th:text="${specs.bluetooth != null ? specs.bluetooth : 'Chưa có'}"></td>
+                        <td th:text="${specs.bluetooth}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.gps != null}">
                         <td>GPS</td>
-                        <td th:text="${specs.gps != null ? specs.gps : 'Chưa có'}"></td>
+                        <td th:text="${specs.gps}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.usbPort != null}">
                         <td>USB</td>
-                        <td th:text="${specs.usbPort != null ? specs.usbPort : 'Chưa có'}"></td>
+                        <td th:text="${specs.usbPort}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.dimensions != null}">
                         <td>Kích thước</td>
-                        <td th:text="${specs.dimensions != null ? specs.dimensions : 'Chưa có'}"></td>
+                        <td th:text="${specs.dimensions}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.weight != null}">
                         <td>Trọng lượng</td>
-                        <td th:text="${specs.weight != null ? specs.weight : 'Chưa có'}"></td>
+                        <td th:text="${specs.weight}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.ipRating != null}">
                         <td>IP Rating</td>
-                        <td th:text="${specs.ipRating != null ? specs.ipRating : 'Chưa có'}"></td>
+                        <td th:text="${specs.ipRating}"></td>
                     </tr>
-                    <tr>
+                    <tr th:if="${specs.specialFeatures != null}">
                         <td>Tính năng đặc biệt</td>
-                        <td th:text="${specs.specialFeatures != null ? specs.specialFeatures : 'Chưa có'}"></td>
+                        <td th:text="${specs.specialFeatures}"></td>
                     </tr>
                 </table>
             </div>
+
 
             <div class="comments">
                 <h3>Bình luận</h3>
@@ -188,9 +193,148 @@
     </div>
 </main>
 
-<footer style="margin-top:50px; padding:20px; background-color:#0078d7; color:white; text-align:center; border-radius:6px 6px 0 0;">
-    <p>&copy; 2025 Team For One. All rights reserved.</p>
+<footer class="site-footer">
+    <div class="footer-top">
+        <div class="container">
+            <div class="footer-columns">
+                <div class="footer-col">
+                    <h4>Hỗ trợ khách hàng</h4>
+                    <ul>
+                        <li><a th:href="@{/help/shipping}">Vận chuyển – giao hàng</a></li>
+                        <li><a th:href="@{/help/return}">Đổi / trả hàng</a></li>
+                        <li><a th:href="@{/help/faq}">Câu hỏi thường gặp</a></li>
+                        <li><a th:href="@{/contact}">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Về Team For One</h4>
+                    <ul>
+                        <li><a th:href="@{/about}">Giới thiệu</a></li>
+                        <li><a th:href="@{/policy/privacy}">Chính sách bảo mật</a></li>
+                        <li><a th:href="@{/policy/terms}">Điều khoản sử dụng</a></li>
+                        <li><a th:href="@{/jobs}">Tuyển dụng</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Kết nối với chúng tôi</h4>
+                    <ul class="social-links">
+                        <li><a href="https://www.facebook.com/yourpage" target="_blank">Facebook</a></li>
+                        <li><a href="https://www.instagram.com/yourpage" target="_blank">Instagram</a></li>
+                        <li><a href="https://www.youtube.com/yourchannel" target="_blank">YouTube</a></li>
+                    </ul>
+                    <div class="newsletter">
+                        <h5>Đăng ký nhận tin</h5>
+                        <form th:action="@{/newsletter/subscribe}" method="post">
+                            <input type="email" name="email" placeholder="Email của bạn" required>
+                            <button type="submit">Đăng ký</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Thông tin liên hệ</h4>
+                    <ul class="contact-info">
+                        <li>📍 Địa chỉ: 1234 Đường ABC, Phường XYZ, TP.HCM</li>
+                        <li>📞 Hotline: 1800-1234</li>
+                        <li>✉️ Email: support@teamforone.vn</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="container">
+            <p>&copy; 2025 Team For One. All rights reserved. – Thiết kế bởi Team For One</p>
+        </div>
+    </div>
 </footer>
+
+<style>
+    .site-footer {
+        background-color: #0078d7;
+        color: white;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .site-footer a {
+        color: #f3f4f6;
+        text-decoration: none;
+    }
+    .site-footer a:hover {
+        color: #e4e6e8;
+    }
+    .site-footer .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 40px 20px;
+    }
+    .footer-columns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+    .footer-col {
+        flex: 1 1 220px;
+    }
+    .footer-col h4 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    .footer-col ul {
+        list-style: none;
+    }
+    .footer-col ul li {
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+    }
+    .social-links li {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .newsletter {
+        margin-top: 15px;
+    }
+    .newsletter input[type="email"] {
+        width: calc(100% - 110px);
+        padding: 8px 10px;
+        border: none;
+        border-radius: 4px 0 0 4px;
+    }
+    .newsletter button {
+        padding: 9px 15px;
+        border: none;
+        background-color: #d70018;
+        color: white;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        transition: background-color .3s ease;
+    }
+    .newsletter button:hover {
+        background-color: #b10015;
+    }
+    .footer-bottom {
+        text-align: center;
+        padding: 15px 20px;
+        background-color: #005fa3;
+    }
+    .footer-bottom p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    @media (max-width: 768px) {
+        .footer-columns {
+            flex-direction: column;
+        }
+        .newsletter input[type="email"] {
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .newsletter button {
+            width: 100%;
+            border-radius: 4px;
+        }
+    }
+</style>
 
 </body>
 </html>

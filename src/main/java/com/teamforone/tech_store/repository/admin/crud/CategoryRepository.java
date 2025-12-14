@@ -6,5 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Categories, String> {
+
+    // Lấy category theo slug trên navbar
     Categories findBySlug(String slug);
+
 }
