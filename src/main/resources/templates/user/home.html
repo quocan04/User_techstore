@@ -14,22 +14,45 @@
             color: #333;
             line-height: 1.6;
         }
-        header {
-            background-color: #0078d7;
+        .site-header {
+
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #0078d7;
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left h1 {
+            margin: 0;
+            font-size: 28px;
             color: white;
-            padding: 20px 30px;
-            text-align: center;
-            border-radius: 0 0 6px 6px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
-        header h1 {
-            font-weight: 700;
-            font-size: 2.5rem;
-            letter-spacing: 2px;
+
+        .header-left p {
+            margin: 4px 0 0;
+            font-size: 14px;
+            color: white;
         }
-        header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .top-icon {
+            text-decoration: none;
+            color: Black;
+            font-size: 18px;
+        }
+
+        .top-icon:hover {
+            color: white;
         }
         /* Thanh menu */
         nav {
@@ -239,43 +262,48 @@
 </head>
 <body>
 
-<header>
-    <h1>Team For One</h1>
-    <p>Cửa hàng đồ công nghệ hàng đầu</p>
-</header>
+<header class="site-header">
+    <div class="header-row">
+        <div class="header-left">
+            <h1>Team For One</h1>
+            <p>Cửa hàng đồ công nghệ hàng đầu</p>
+        </div>
 
-<nav>
-    <div class="nav-links">
-        <a th:href="@{/category/dien-thoai-phu-kien}">Điện thoại</a>
-        <a th:href="@{/category/laptop}">Laptop</a>
-        <a th:href="@{/category/tablet}">Tablet</a>
-        <a th:href="@{/category/dong-ho-thong-minh}">Đồng hồ</a>
+        <div class="top-bar">
+            <div class="top-bar-right">
+                <a th:href="@{/cart}" class="top-icon">
+                    🛒 Giỏ hàng
+                    <span class="cart-badge"
+                          th:if="${cartCount != null}"
+                          th:text="${cartCount}">0</span>
+                </a>
 
-        <div class="dropdown">
-            <a href="#" class="dropbtn">Thống kê ▾</a>
-            <div class="dropdown-content">
-                <a th:href="@{/stats/best-sellers/daily}">Bán chạy hôm nay</a>
-                <a th:href="@{/stats/best-sellers/monthly}">Bán chạy tháng</a>
-                <a th:href="@{/stats/best-sellers/yearly}">Hot nhất năm</a>
+                <a th:href="@{/profile}" class="top-icon">👤 Hồ sơ</a>
+                <a th:href="@{/logout}" class="top-icon">Đăng xuất</a>
             </div>
         </div>
     </div>
+</header>
+
+
+<nav>
+    <div class="nav-links">
+
+        <a href="/category/dien-thoai-phu-kien" th:href="@{/category/dien-thoai-phu-kien}">Điện thoại & Phụ kiện</a>
+        <a href="/category/laptop" th:href="@{/category/laptop}">Laptop</a>
+        <a href="/category/tablet" th:href="@{/category/tablet}">Tablet</a>
+        <a href="/category/dong-ho-thong-minh" th:href="@{/category/dong-ho-thong-minh}">Đồng hồ thông minh</a>
+        <a href="/category/phu-kien-am-thanh" th:href="@{/category/phu-kien-am-thanh}">Phụ kiện âm thanh</a>
+        <a href="/category/pc-linh-kien" th:href="@{/category/pc-linh-kien}">PC & Linh kiện</a>
+        <a href="/category/thiet-bi-mang" th:href="@{/category/thiet-bi-mang}">Thiết bị mạng</a>
+
+
+    </div>
 
     <form class="search-bar" th:action="@{/search}" method="get">
-        <input type="text" name="keyword" placeholder="Tìm kiếm..." required>
+        <input type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." required>
         <button type="submit">🔍</button>
     </form>
-
-    <div class="nav-actions">
-        <a th:href="@{/cart}" class="nav-icon"> Giỏ hàng
-            🛒
-            <span class="cart-badge" th:if="${cartCount != null}" th:text="${cartCount}">0</span>
-        </a>
-
-        <a th:href="@{/profile}" class="nav-icon">Hồ sơ cá nhân👤</a>
-
-        <a th:href="@{/logout}" class="nav-icon">Đăng xuất🚪</a>
-    </div>
 </nav>
 
 <main>
@@ -284,7 +312,7 @@
     <h2 th:if="${keyword == null and statsTitle == null}">Sản phẩm nổi bật</h2>
 
     <div class="products-grid">
-        <a th:each="product : ${products}" th:href="@{'/product/' + ${product.id}}" class="product-card">
+        <a th:each="product : ${products}" th:href="@{'/product/' + ${product.slug}}" class="product-card">
             <img th:src="@{${product.imageUrl}}" alt="Hình ảnh sản phẩm" class="product-image">
             <h3 th:text="${product.name}"></h3>
 

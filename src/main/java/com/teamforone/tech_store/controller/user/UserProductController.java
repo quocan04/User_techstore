@@ -1,8 +1,10 @@
 package com.teamforone.tech_store.controller.user;
 
 import com.teamforone.tech_store.model.Product;
+import com.teamforone.tech_store.model.CTProducts;
 import com.teamforone.tech_store.model.PhoneSpecs;
 import com.teamforone.tech_store.service.user.ProductService;
+import com.teamforone.tech_store.service.user.CTProductService;
 import com.teamforone.tech_store.service.user.PhoneSpecsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,6 +13,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import java.util.ArrayList;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/product")
@@ -23,45 +30,60 @@ public class UserProductController {
     @Autowired
     private PhoneSpecsService phoneSpecsService;
 
-    // Sử dụng SLUG thay vì ID cho URL thân thiện hơn
+    @Autowired
+    private CTProductService ctProductService;
+
+    // Hiển thị chi tiết sản phẩm
     @GetMapping("/{slug}")
     public String viewProductDetail(@PathVariable("slug") String slug, Model model) {
-        System.out.println("DEBUG: Truy cập chi tiết sản phẩm với slug = " + slug);
+        System.out.println("═══════════════════════════════════════════");
+        System.out.println("🔍 [PRODUCT DETAIL] slug = " + slug);
 
-        // Lấy product theo slug
         Product product = productService.getProductBySlug(slug);
 
         if (product == null) {
-            System.out.println("DEBUG: Không tìm thấy sản phẩm với slug = " + slug);
-            return "redirect:/404"; // Hoặc return "error/404";
+            System.out.println("❌ Không tìm thấy product với slug = " + slug);
+            return "error/404";
         }
 
-        System.out.println("DEBUG: Tìm thấy sản phẩm: " + product.getName());
+        String productId = product.getId();
+        System.out.println("✅ Product ID: " + productId);
 
-        // Lấy specs theo product ID
-        PhoneSpecs specs = phoneSpecsService.getSpecsByProductId(product.getId());
+        // Lấy specs
+        PhoneSpecs specs = phoneSpecsService.getSpecsByProductId(productId);
+
+        // Lấy variants
+        List<CTProducts> variants = ctProductService.getVariantsByProductId(productId);
+        CTProducts selectedVariant = null;
+
+        if (!variants.isEmpty()) {
+            selectedVariant = ctProductService.getCheapestVariant(productId);
+            System.out.println("💰 Giá: " + selectedVariant.getPrice());
+        }
 
         model.addAttribute("product", product);
         model.addAttribute("specs", specs);
-        // model.addAttribute("comments", new ArrayList<>()); // Thêm sau khi có comments
+        model.addAttribute("variants", variants);
+        model.addAttribute("selectedVariant", selectedVariant);
+        model.addAttribute("comments", new ArrayList<>()); // Thêm sau
 
+        System.out.println("═══════════════════════════════════════════");
         return "user/product-detail";
     }
 
-    // Giữ lại endpoint cũ nếu muốn hỗ trợ truy cập bằng ID
-    @GetMapping("/id/{id}")
-    public String viewProductDetailById(@PathVariable("id") String productId, Model model) {
-        Product product = productService.getProductById(productId);
+    // Xử lý thêm comment - SỬA DÙNG SLUG
+    @PostMapping("/{slug}/comment")
+    public String addComment(
+            @PathVariable("slug") String slug,
+            @RequestParam("content") String content) {
 
-        if (product == null) {
-            return "redirect:/404";
-        }
+        System.out.println("💬 [COMMENT] slug = " + slug);
+        System.out.println("💬 Content: " + content);
 
-        PhoneSpecs specs = phoneSpecsService.getSpecsByProductId(productId);
+        // TODO: Lưu comment vào database
+        // Product product = productService.getProductBySlug(slug);
+        // commentService.save(new Comment(product.getId(), content));
 
-        model.addAttribute("product", product);
-        model.addAttribute("specs", specs);
-
-        return "user/product-detail";
+        return "redirect:/product/" + slug;
     }
 }

@@ -3,15 +3,17 @@ package com.teamforone.tech_store.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
+import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
+import lombok.EqualsAndHashCode;
 
-
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class CTProductId implements Serializable {
     private static final long serialVersionUID = 1L;
 

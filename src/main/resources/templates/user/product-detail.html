@@ -7,13 +7,131 @@
     <style>
         * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
         body {background-color:#f9f9f9; color:#333; line-height:1.6;}
-        header {background-color:#0078d7; color:white; padding:20px 30px; text-align:center; border-radius:0 0 6px 6px; box-shadow:0 3px 6px rgba(0,0,0,0.1);}
-        header h1 {font-weight:700; font-size:2.5rem; letter-spacing:2px;}
-        header p {font-size:1.1rem; opacity:0.9;}
-        nav {background-color:#005fa3; display:flex; justify-content:center; gap:40px; padding:12px 0; box-shadow:0 3px 6px rgba(0,0,0,0.1);}
-        nav a {color:white; text-decoration:none; font-weight:600; font-size:1.1rem; position:relative;}
-        nav a::after {content:''; position:absolute; width:0; height:3px; background-color:white; bottom:-5px; left:0; transition:width 0.3s ease;}
-        nav a:hover::after {width:100%;}
+        .site-header {
+
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #0078d7;
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left h1 {
+            margin: 0;
+            font-size: 28px;
+            color: white;
+        }
+
+        .header-left p {
+            margin: 4px 0 0;
+            font-size: 14px;
+            color: white;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .top-icon {
+            text-decoration: none;
+            color: Black;
+            font-size: 18px;
+        }
+
+        .top-icon:hover {
+            color: white;
+        }
+        nav {
+            background-color: #005fa3;
+            display: flex;
+            justify-content: space-between; /* Tách menu và search */
+            align-items: center;
+            padding: 12px 30px;
+            flex-wrap: wrap;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            background-color: white;
+            bottom: -5px;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Thanh tìm kiếm */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            padding: 2px 5px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            padding: 8px 12px;
+            font-size: 1rem;
+            width: 200px;
+        }
+
+        .search-bar button {
+            border: none;
+            background-color: #0078d7;
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background-color: #005fa3;
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+            .search-bar input {
+                width: 100%;
+            }
+        }
         main {max-width:1200px; margin:30px auto; padding:0 20px;}
         .product-container {display:flex; flex-wrap:wrap; background:white; border-radius:8px; padding:30px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
         .product-image {flex:1; text-align:center;}
@@ -43,32 +161,63 @@
 </head>
 <body>
 
-<header>
-    <h1>Team For One</h1>
-    <p>Cửa hàng đồ công nghệ hàng đầu</p>
+<header class="site-header">
+    <div class="header-row">
+        <div class="header-left">
+            <h1>Team For One</h1>
+            <p>Cửa hàng đồ công nghệ hàng đầu</p>
+        </div>
+
+        <div class="top-bar">
+            <div class="top-bar-right">
+                <a th:href="@{/cart}" class="top-icon">
+                    🛒 Giỏ hàng
+                    <span class="cart-badge"
+                          th:if="${cartCount != null}"
+                          th:text="${cartCount}">0</span>
+                </a>
+
+                <a th:href="@{/profile}" class="top-icon">👤 Hồ sơ</a>
+                <a th:href="@{/logout}" class="top-icon">Đăng xuất</a>
+            </div>
+        </div>
+    </div>
 </header>
 
 <nav>
-    <a th:href="@{/category/smartphones}">Điện thoại</a>
-    <a th:href="@{/category/headphones}">Tai nghe</a>
-    <a th:href="@{/category/bluetooths}">Bluetooths</a>
-    <a th:href="@{/category/laptop}">Laptops</a>
+    <div class="nav-links">
+
+        <a href="/category/dien-thoai-phu-kien" th:href="@{/category/dien-thoai-phu-kien}">Điện thoại & Phụ kiện</a>
+        <a href="/category/laptop" th:href="@{/category/laptop}">Laptop</a>
+        <a href="/category/tablet" th:href="@{/category/tablet}">Tablet</a>
+        <a href="/category/dong-ho-thong-minh" th:href="@{/category/dong-ho-thong-minh}">Đồng hồ thông minh</a>
+        <a href="/category/phu-kien-am-thanh" th:href="@{/category/phu-kien-am-thanh}">Phụ kiện âm thanh</a>
+        <a href="/category/pc-linh-kien" th:href="@{/category/pc-linh-kien}">PC & Linh kiện</a>
+        <a href="/category/thiet-bi-mang" th:href="@{/category/thiet-bi-mang}">Thiết bị mạng</a>
+
+
+    </div>
+
+    <form class="search-bar" th:action="@{/search}" method="get">
+        <input type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." required>
+        <button type="submit">🔍</button>
+    </form>
 </nav>
 
 <main>
     <div class="product-container">
-        <div class="products-grid">
-            <a th:each="product : ${products}" th:href="@{'/product/' + ${product.id}}" class="product-card">
-                <img th:src="@{${product.imageUrl}}"
-                     alt="Hình ảnh sản phẩm"
-                     class="product-image">
-                <h3 th:text="${product.name}"></h3>
-            </a>
-        </div>
 
+        <div class="product-image">
+            <img th:src="${product.imageUrl}"
+                 alt="Product Image">
+        </div>
         <div class="product-info">
             <h1 th:text="${product.name}"></h1>
-            <div class="price" th:text="${#numbers.formatDecimal(product.price, 0, 0)} + ' ₫'"></div>
+            <div class="price"
+                 th:text="${selectedVariant != null && selectedVariant.price != null
+        ? #numbers.formatDecimal(selectedVariant.price, 0, 0) + ' ₫'
+        : 'Liên hệ'}">
+            </div>
 
             <div class="buttons">
                 <button class="buy-now">Mua ngay</button>
@@ -183,7 +332,7 @@
                         <p th:text="${comment.content}"></p>
                     </div>
                 </div>
-                <form th:action="@{/product/{id}/comment(id=${product.id})}" method="post">
+                <form th:action="@{/product/{slug}/comment(slug=${product.slug})}" method="post">
                     <textarea name="content" placeholder="Viết bình luận..." rows="3" style="width:100%; margin-top:10px; padding:8px;"></textarea>
                     <button type="submit" style="margin-top:8px; padding:10px 20px; border:none; background:#0078d7; color:white; border-radius:4px;">Gửi</button>
                 </form>
