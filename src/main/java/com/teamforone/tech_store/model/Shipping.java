@@ -27,10 +27,10 @@ public class Shipping {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "distance_km", nullable = false, precision = 10, scale = 2)
+    @Column(name = "distance_km", nullable = true, precision = 10, scale = 2)
     private BigDecimal distance;
 
-    @Column(name = "price_per_km", nullable = false, precision = 10, scale = 2)
+    @Column(name = "price_per_km", nullable = true, precision = 10, scale = 2)
     private BigDecimal pricePerKm;
 
     @Column(name = "total_price", insertable = false, updatable = false, columnDefinition = "DECIMAL(10,2)")

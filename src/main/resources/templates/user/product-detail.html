@@ -219,9 +219,36 @@
         : 'Liên hệ'}">
             </div>
 
+            <div class="variant-section">
+                <!-- Chọn màu sắc -->
+                <div class="variant-group" id="colorGroup">
+                    <label>Chọn màu sắc:</label>
+                    <div class="variant-options" id="colorOptions">
+                        <!-- Các màu sẽ được render từ JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Chọn bộ nhớ -->
+                <div class="variant-group" id="storageGroup">
+                    <label>Chọn bộ nhớ:</label>
+                    <div class="variant-options" id="storageOptions">
+                        <!-- Các option bộ nhớ sẽ được render từ JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Chọn size (nếu có) -->
+                <div class="variant-group" id="sizeGroup" style="display: none;">
+                    <label>Chọn kích thước:</label>
+                    <div class="variant-options" id="sizeOptions">
+                        <!-- Các option size sẽ được render từ JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+
             <div class="buttons">
                 <button class="buy-now">Mua ngay</button>
-                <button class="add-cart">Thêm vào giỏ hàng</button>
+                <button class="add-cart" onclick="addToCart()">Thêm vào giỏ hàng</button>
             </div>
 
             <div class="description">
@@ -484,6 +511,44 @@
         }
     }
 </style>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function addToCart() {
+        const productId = /*[[${product.id}]]*/ 0;
+        const quantity = 1;
+
+        fetch('/api/user/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                productId: productId,
+                quantity: quantity
+            })
+        })
+            .then(async response => {
+                let msg = '';
+                try {
+                    const data = await response.json();
+                    msg = data?.message || response.statusText;
+                } catch(e) {
+                    msg = response.statusText;
+                }
+
+                if(response.ok) {
+                    alert('✅ ' + (msg || 'Đã thêm vào giỏ hàng!'));
+                } else {
+                    alert('❌ Thêm vào giỏ hàng thất bại: ' + msg);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('❌ Lỗi mạng hoặc server');
+            });
+    }
+    /*]]>*/
+</script>
 
 </body>
 </html>

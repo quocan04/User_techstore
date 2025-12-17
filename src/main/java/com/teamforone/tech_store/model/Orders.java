@@ -1,9 +1,5 @@
 package com.teamforone.tech_store.model;
 
-// --- ĐẦY ĐỦ CÁC IMPORT CẦN THIẾT ---
-
-// Import các thư viện JPA (cho @Entity, @Table, @Id, v.v.)
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,8 +10,6 @@ import org.hibernate.annotations.GenericGenerator;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
-// --- KẾT THÚC IMPORT ---
-
 
 @Entity
 @Table(name = "orders") // Tên bảng trong DB
@@ -36,7 +30,6 @@ public class Orders {
 
     /**
      * Quan hệ n-1 với User.
-     * Nhiều đơn hàng có thể thuộc về 1 User.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -44,24 +37,13 @@ public class Orders {
 
     /**
      * Quan hệ n-1 với Shipping.
-     * (Giả định một địa chỉ Shipping có thể được dùng cho nhiều Orders)
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_id")
     private Shipping shipping;
 
     /**
-     * Quan hệ n-1 với NhanVien.
-     * Một nhân viên có thể xử lý nhiều đơn hàng.
-     */
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "nhanvienID")
-//    private NhanVien nhanVien;
-
-    /**
      * Phương thức thanh toán.
-     * Dùng @Enumerated(EnumType.STRING) để lưu tên (VNPAY, COD...)
-     * thay vì số (0, 1...).
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method")
@@ -70,6 +52,13 @@ public class Orders {
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
+    /**
+     * THÊM MỚI: Trạng thái đơn hàng (PENDING, PAID, CANCELLED...)
+     * Giúp fix lỗi biên dịch setStatus trong OrderServiceImpl
+     */
+    @Column(name = "status", length = 50)
+    private String status;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -77,14 +66,12 @@ public class Orders {
 
     /**
      * Quan hệ 1-n với OrderItem.
-     * Một đơn hàng có nhiều món hàng.
      */
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> orderItems;
 
     /**
-     * Quan hệ 1-1 với Payment (chúng ta vừa tạo).
-     * 'mappedBy = "order"' trỏ tới tên trường 'order' trong Entity Payment.
+     * Quan hệ 1-1 với Payment.
      */
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Payment payment;

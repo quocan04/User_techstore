@@ -7,22 +7,21 @@ import com.teamforone.tech_store.dto.response.CartResponse;
 import com.teamforone.tech_store.dto.response.PaymentResponse;
 import com.teamforone.tech_store.model.Cart;
 import com.teamforone.tech_store.model.CartItem;
-import com.teamforone.tech_store.model.User;
 import com.teamforone.tech_store.model.Product;
+import com.teamforone.tech_store.model.User;
+import com.teamforone.tech_store.repository.admin.UserRepository;
 import com.teamforone.tech_store.repository.admin.crud.CartItemRepository;
 import com.teamforone.tech_store.repository.admin.crud.CartRepository;
+import com.teamforone.tech_store.repository.admin.crud.UserProductRepository;
 import com.teamforone.tech_store.service.user.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.teamforone.tech_store.repository.admin.UserRepository;
-import com.teamforone.tech_store.repository.admin.crud.UserProductRepository;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+import java.math.BigDecimal;
+import java.nio.ByteBuffer; // ⬅️ Bổ sung Import này
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -30,110 +29,123 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
-    private final UserProductRepository userProductRepository; // ✅ THÊM DÒNG NÀY
+    private final UserProductRepository userProductRepository;
 
     @Autowired
-    public CartServiceImpl(CartRepository cartRepository,
-                           CartItemRepository cartItemRepository,
-                           UserRepository userRepository,
-                           UserProductRepository userProductRepository) { // ✅ THÊM PARAMETER
+    public CartServiceImpl(
+            CartRepository cartRepository,
+            CartItemRepository cartItemRepository,
+            UserRepository userRepository,
+            UserProductRepository userProductRepository
+    ) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
         this.userRepository = userRepository;
-        this.userProductRepository = userProductRepository; // ✅ THÊM DÒNG NÀY
+        this.userProductRepository = userProductRepository;
     }
 
-    // =================================================================
-    // PHƯƠNG THỨC: processVnpayCheckout
-    // =================================================================
+    // ======================================================
+    // CHECKOUT
+    // ======================================================
     @Override
     @Transactional
     public PaymentResponse processVnpayCheckout(String userId, CheckoutRequest request) {
 
-        // Lấy CartResponse thật (Tự động gọi getCartByUserId)
         CartResponse cartData = getCartByUserId(userId);
 
         if (cartData.getTotalItems() == 0) {
             throw new RuntimeException("Giỏ hàng trống, không thể thanh toán.");
         }
 
-        // 2. Tạo Order No
         String orderNo = "ORD-" + System.currentTimeMillis();
-
-        // 3. Tạo PaymentResponse DTO và link QR VietQR (Dùng thông tin MB BANK)
-        String bankCode = "970422";
-        String accountNumber = "0364424536";
-        String accountName = "TRAN TAN HAO";
-        BigDecimal amount = cartData.getGrandTotal() != null ? cartData.getGrandTotal() : BigDecimal.ZERO;
-
-        String qrLink = "https://img.vietqr.io/image/" + bankCode + "-" + accountNumber + "-compact2.png?amount=" + amount.intValue() + "&addInfo=TTDH" + orderNo + "&accountName=" + accountName;
+        BigDecimal amount = cartData.getGrandTotal();
 
         PaymentResponse response = new PaymentResponse();
         response.setOrderNo(orderNo);
-        response.setPaymentUrl(qrLink);
+        response.setPaymentUrl("VNPAY_URL_" + amount);
 
         return response;
     }
-    // =================================================================
 
-
+    // ======================================================
+    // ADD TO CART
+    // ======================================================
     @Override
     @Transactional
     public void addToCart(String userId, AddToCartRequest request) {
-        // 1. Tìm hoặc tạo Cart cho user
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
 
+        // Lấy hoặc tạo cart
         Cart cart = cartRepository.findByUser_Id(userId)
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
                     newCart.setUser(user);
-                    return cartRepository.save(newCart);
+                    Cart savedCart = cartRepository.save(newCart);
+                    cartRepository.flush(); // ⬅️ FORCE FLUSH NGAY
+                    return savedCart;
                 });
 
-        // 2. Tìm sản phẩm
-        Product product = userProductRepository.findById(request.getProductId())
+        // Đảm bảo cart đã có trong DB
+        if (cart.getCartId() == null) {
+            throw new RuntimeException("Cart ID is null after save");
+        }
+
+        // Validate product
+        String pidStr = String.valueOf(request.getProductId());
+
+        userProductRepository.findById(pidStr)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
-        // 3. ✅ SỬA LẠI: Kiểm tra xem sản phẩm đã có trong cart chưa (với variant)
-        // Vì CartItem dùng String product, không phải @ManyToOne, nên ta query theo String
-        Optional<CartItem> existingItem = cartItemRepository.findByCart_CartIDAndProductAndColorAndDisplaySizeAndStorage(
-                cart.getCartID(),
-                request.getProductId(),
-                request.getColorId(),
-                request.getSizeId(),
-                request.getStorageId()
-        );
+        UUID cartId = cart.getCartId();
+        UUID productId = request.getProductId();
+        UUID colorId = request.getColorId();
+        UUID sizeId = request.getSizeId();
+        UUID storageId = request.getStorageId();
+
+        // Debug log
+        System.out.println("🔥 Attempting to insert CartItem with cart_id: " + cartId);
+
+        Optional<CartItem> existingItem =
+                cartItemRepository.findByCart_CartIdAndProductIdAndColorIdAndSizeIdAndStorageId(
+                        cartId, productId, colorId, sizeId, storageId);
 
         if (existingItem.isPresent()) {
-            // Nếu đã có thì tăng số lượng
             CartItem item = existingItem.get();
             item.setQuantity(item.getQuantity() + request.getQuantity());
             cartItemRepository.save(item);
-        } else {
-            // Nếu chưa có thì tạo mới
-            CartItem newItem = new CartItem();
-            newItem.setCart(cart);
-            newItem.setProduct(request.getProductId()); // ✅ Set String productId
-            newItem.setColor(request.getColorId());
-            newItem.setDisplaySize(request.getSizeId());
-            newItem.setStorage(request.getStorageId());
-            newItem.setQuantity(request.getQuantity());
-            cartItemRepository.save(newItem);
+            return;
         }
+
+        CartItem newItem = new CartItem();
+        newItem.setCart(cart); // ⬅️ Set relationship, không chỉ set ID
+        newItem.setProductId(productId);
+        newItem.setColorId(colorId);
+        newItem.setSizeId(sizeId);
+        newItem.setStorageId(storageId);
+        newItem.setQuantity(request.getQuantity());
+
+        cartItemRepository.saveAndFlush(newItem); // ⬅️ Dùng saveAndFlush
     }
 
+    // ======================================================
+    // GET CART
+    // ======================================================
     @Override
     public CartResponse getCartByUserId(String userId) {
-        // 1. Tìm Cart của user
+
+        System.out.println("🔥 getCartByUserId - userId: " + userId);
+
         Optional<Cart> cartOpt = cartRepository.findByUser_Id(userId);
+
+        System.out.println("🔥 Cart found: " + cartOpt.isPresent());
 
         CartResponse response = new CartResponse();
 
         if (cartOpt.isEmpty()) {
-            // Giỏ hàng trống
             response.setCartId(null);
-            response.setItems(new ArrayList<>());
+            response.setItems(Collections.emptyList());
             response.setTotalItems(0);
             response.setTemporaryTotal(BigDecimal.ZERO);
             response.setGrandTotal(BigDecimal.ZERO);
@@ -142,84 +154,147 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = cartOpt.get();
 
-        // 2. KHÔI PHỤC LOGIC TRUY VẤN DB THẬT
-        List<Object[]> rawResults = cartItemRepository.findCartItemsWithDetailsNative(cart.getCartID());
+        System.out.println("🔥 Cart ID: " + cart.getCartId());
 
-        // 3. Convert sang CartItemResponse
+        List<Object[]> rawResults =
+                cartItemRepository.findCartItemsWithDetailsNative(cart.getCartId());
+
+        System.out.println("🔥 Raw results size: " + rawResults.size());
+
         List<CartItemResponse> items = rawResults.stream()
                 .map(this::convertToCartItemResponse)
                 .collect(Collectors.toList());
 
-        // 4. Tính toán
-        int totalItems = items.stream().mapToInt(CartItemResponse::getQuantity).sum();
+        System.out.println("🔥 Converted items size: " + items.size());
+
+        int totalItems = items.stream()
+                .mapToInt(CartItemResponse::getQuantity)
+                .sum();
+
         BigDecimal temporaryTotal = items.stream()
                 .map(CartItemResponse::getSubtotal)
+                .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // 5. Set response
-        response.setCartId(cart.getCartID());
+        response.setCartId(cart.getCartId().toString());
         response.setItems(items);
         response.setTotalItems(totalItems);
         response.setTemporaryTotal(temporaryTotal);
         response.setGrandTotal(temporaryTotal);
 
+        System.out.println("🔥 Final response - totalItems: " + totalItems);
+        System.out.println("🔥 Final response - grandTotal: " + temporaryTotal);
+
         return response;
     }
 
+    // ======================================================
+    // UPDATE QUANTITY
+    // ======================================================
     @Override
     public void updateCartItemQuantity(String cartItemId, int quantity) {
-        // 1. Tìm CartItem
-        CartItem cartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new RuntimeException("CartItem không tồn tại"));
 
-        // 2. Validate số lượng
         if (quantity <= 0) {
             throw new RuntimeException("Số lượng phải lớn hơn 0");
         }
 
-        // 3. Cập nhật số lượng
+        UUID itemId = UUID.fromString(cartItemId);
+
+        CartItem cartItem = cartItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("CartItem không tồn tại"));
+
         cartItem.setQuantity(quantity);
         cartItemRepository.save(cartItem);
     }
 
+    // ======================================================
+    // REMOVE ITEM
+    // ======================================================
     @Override
     @Transactional
     public void removeCartItem(String cartItemId) {
-        // 1. Tìm CartItem
-        CartItem cartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new RuntimeException("CartItem không tồn tại"));
-
-        // 2. Xóa
-        cartItemRepository.delete(cartItem);
-    }
-
-    @Override
-    @Transactional
-    public void clearCart(String userId) {
-        // 1. Tìm Cart của user
-        Optional<Cart> cartOpt = cartRepository.findByUser_Id(userId);
-
-        if (cartOpt.isPresent()) {
-            Cart cart = cartOpt.get();
-
-            // 2. ✅ SỬA LẠI: Xóa tất cả CartItem trong cart
-            cartItemRepository.deleteAllByCart_CartID(cart.getCartID());
+        try {
+            UUID itemId = UUID.fromString(cartItemId);
+            CartItem cartItem = cartItemRepository.findById(itemId)
+                    .orElseThrow(() -> new RuntimeException("CartItem không tồn tại"));
+            cartItemRepository.delete(cartItem);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("cartItemId không hợp lệ: " + cartItemId);
         }
     }
 
-    // Helper method: Convert Object[] từ native query sang CartItemResponse
+
+    // ======================================================
+    // CLEAR CART
+    // ======================================================
+    @Override
+    @Transactional
+    public void clearCart(String userId) {
+
+        cartRepository.findByUser_Id(userId)
+                .ifPresent(cart ->
+                        cartItemRepository.deleteAllByCart_CartId(cart.getCartId())
+                );
+    }
+
+    // ======================================================
+    // MAPPER
+    // ======================================================
     private CartItemResponse convertToCartItemResponse(Object[] row) {
+
         CartItemResponse response = new CartItemResponse();
-        response.setCartItemId((String) row[0]);
-        response.setProductId((String) row[1]);
+
+        // Sử dụng convertIdToString để xử lý lỗi [B@... (byte array)
+        response.setCartItemId(convertIdToString(row[0]));
+        response.setProductId(convertIdToString(row[1]));
+
         response.setProductName((String) row[2]);
         response.setDefaultImage((String) row[3]);
         response.setQuantity(((Number) row[4]).intValue());
-        response.setUnitPrice((BigDecimal) row[5]);
-        response.setSubtotal((BigDecimal) row[6]);
+
+        // Sử dụng toBigDecimal để xử lý lỗi "cannot find symbol"
+        response.setUnitPrice(toBigDecimal(row[5]));
+        response.setSubtotal(toBigDecimal(row[6]));
+
         response.setColorName((String) row[7]);
         response.setStorageName((String) row[8]);
         response.setSizeName((String) row[9]);
+
         return response;
+    }
+
+    // ======================================================
+    // HELPER METHODS
+    // ======================================================
+
+    private String convertIdToString(Object obj) {
+        if (obj == null) return null;
+        if (obj instanceof String) return (String) obj;
+        if (obj instanceof UUID) return obj.toString();
+        if (obj instanceof byte[]) {
+            byte[] bytes = (byte[]) obj;
+            if (bytes.length == 16) {
+                ByteBuffer bb = ByteBuffer.wrap(bytes);
+                return new UUID(bb.getLong(), bb.getLong()).toString();
+            }
+        }
+        return obj.toString();
+    }
+
+    private BigDecimal toBigDecimal(Object value) {
+        if (value == null) {
+            return BigDecimal.ZERO;
+        }
+        if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
+        }
+        if (value instanceof Number) {
+            return BigDecimal.valueOf(((Number) value).doubleValue());
+        }
+        try {
+            return new BigDecimal(value.toString());
+        } catch (Exception e) {
+            return BigDecimal.ZERO;
+        }
     }
 }

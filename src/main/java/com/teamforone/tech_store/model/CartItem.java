@@ -1,52 +1,53 @@
 package com.teamforone.tech_store.model;
 
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
-import com.teamforone.tech_store.model.Cart;
+import org.hibernate.type.SqlTypes;
 
 import java.util.Date;
 import java.util.UUID;
 
 @Entity
+@Table(name = "cart_items")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "cart_items")
+@AllArgsConstructor
 public class CartItem {
+
     @Id
     @UuidGenerator
-    @Column(name = "item_id", columnDefinition = "CHAR(36)")
-    private String cartItemID;
+    @Column(name = "item_id", nullable = false, columnDefinition = "BINARY(16)")
+    private UUID itemId; // ⬅️ BỎ @JdbcTypeCode
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cart_id", columnDefinition = "CHAR(36)")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
-    @JoinColumn(name = "product_id", nullable = false, columnDefinition = "CHAR(36)")
-    private String product;
+    // ⬇️ GIỮ NGUYÊN - VẪN DÙNG @JdbcTypeCode
+    @Column(name = "product_id", nullable = false, columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
+    private UUID productId;
 
-    @JoinColumn(name = "colorID", nullable = false, columnDefinition = "CHAR(36)")
-    private String color;
+    @Column(name = "colorid", columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
+    private UUID colorId;
 
-    @JoinColumn(name = "sizeID", nullable = false, columnDefinition = "CHAR(36)")
-    private String displaySize;
+    @Column(name = "sizeid", columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
+    private UUID sizeId;
 
-    @JoinColumn(name = "storageID", nullable = false, columnDefinition = "CHAR(36)")
-    private String storage;
+    @Column(name = "storageid", columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
+    private UUID storageId;
 
-    @Column(name = "quantity", nullable = false, columnDefinition = "INT DEFAULT 1")
+    @Column(name = "quantity", nullable = false)
     private int quantity;
 
     @CreationTimestamp
-    @Column(name = "added_at", nullable = false)
+    @Column(name = "added_at", updatable = false)
     private Date addedAt;
 }

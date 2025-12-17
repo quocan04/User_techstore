@@ -1,7 +1,6 @@
-// File: com.teamforone.tech_store.controller.user.CartController.java
-
 package com.teamforone.tech_store.controller.user;
 
+import jakarta.servlet.http.HttpSession;
 import com.teamforone.tech_store.dto.request.AddToCartRequest;
 import com.teamforone.tech_store.dto.request.CheckoutRequest;
 import com.teamforone.tech_store.dto.response.CartResponse;
@@ -9,10 +8,9 @@ import com.teamforone.tech_store.dto.response.PaymentResponse;
 import com.teamforone.tech_store.service.user.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -25,59 +23,128 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    /**
-     * API CHÍNH: GET /api/user/cart (Lấy dữ liệu thật từ DB)
-     */
     @GetMapping("/cart")
-    public ResponseEntity<CartResponse> getCartApi(@AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body(null);
+    public ResponseEntity<?> getCartApi(HttpSession session) {
+        System.out.println("🔥 GET /cart - Session ID: " + session.getId());
+        System.out.println("🔥 GET /cart - userId: " + session.getAttribute("userId"));
+
+        String userId = (String) session.getAttribute("userId");
+
+        if (userId == null) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("error", "Vui lòng đăng nhập"));
         }
+
         try {
-            String userId = userDetails.getUsername();
             CartResponse cartResponse = cartService.getCartByUserId(userId);
+
+            System.out.println("🔥 GET /cart - Response: " + cartResponse);
+            System.out.println("🔥 GET /cart - Items count: " +
+                    (cartResponse.getItems() != null ? cartResponse.getItems().size() : 0));
 
             return ResponseEntity.ok(cartResponse);
         } catch (Exception e) {
             System.err.println("Lỗi Server khi tải giỏ hàng: " + e.getMessage());
-            return ResponseEntity.status(500).body(null);
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Lỗi server: " + e.getMessage()));
         }
     }
 
+    // ======================================================
+    // UPDATE QUANTITY (HÀM MỚI THÊM VÀO ĐỂ FIX 404)
+    // ======================================================
+    @PostMapping("/cart/update/{cartItemId}")
+    public ResponseEntity<?> updateQuantity(
+            HttpSession session,
+            @PathVariable String cartItemId,
+            @RequestParam int quantity) {
 
-    /**
-     * API: POST /api/user/checkout/vnpay (Xử lý thanh toán)
-     */
+        System.out.println("🔥 POST /cart/update - cartItemId: " + cartItemId);
+        System.out.println("🔥 POST /cart/update - new quantity: " + quantity);
+
+        String userId = (String) session.getAttribute("userId");
+
+        if (userId == null) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("error", "Vui lòng đăng nhập"));
+        }
+
+        try {
+            cartService.updateCartItemQuantity(cartItemId, quantity);
+
+            // Lấy lại giỏ hàng mới nhất để UI cập nhật tiền
+            CartResponse updatedCart = cartService.getCartByUserId(userId);
+            return ResponseEntity.ok(updatedCart);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi cập nhật số lượng: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @PostMapping("/checkout/vnpay")
-    public ResponseEntity<PaymentResponse> checkoutVnpay(
-            @AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<?> checkoutVnpay(
+            HttpSession session,
             @RequestBody CheckoutRequest request) {
 
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body(null);
+        String userId = (String) session.getAttribute("userId");
+
+        if (userId == null) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("error", "Vui lòng đăng nhập"));
         }
+
         try {
-            String userId = userDetails.getUsername();
             PaymentResponse paymentResponse = cartService.processVnpayCheckout(userId, request);
-
             return ResponseEntity.ok(paymentResponse);
-
         } catch (Exception e) {
             System.err.println("Lỗi Server khi xử lý thanh toán: " + e.getMessage());
-            return ResponseEntity.badRequest().body(null);
+            e.printStackTrace();
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
-    // API: Thêm sản phẩm vào giỏ hàng (Giữ nguyên)
     @PostMapping("/cart/add")
     public ResponseEntity<?> addToCart(
-            @AuthenticationPrincipal UserDetails userDetails,
+            HttpSession session,
             @RequestBody AddToCartRequest request) {
-        // ... (Logic cũ)
-        return ResponseEntity.ok("Đã thêm vào giỏ hàng");
+
+        System.out.println("🔥 POST /cart/add - Session ID: " + session.getId());
+        System.out.println("🔥 POST /cart/add - isLoggedIn: " + session.getAttribute("isLoggedIn"));
+        System.out.println("🔥 POST /cart/add - userId: " + session.getAttribute("userId"));
+        System.out.println("🔥 POST /cart/add - Request: " + request);
+
+        String userId = (String) session.getAttribute("userId");
+
+        if (userId == null || userId.isEmpty()) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("error", "Vui lòng đăng nhập để thêm vào giỏ hàng"));
+        }
+
+        try {
+            cartService.addToCart(userId, request);
+            return ResponseEntity.ok(Map.of("message", "Đã thêm vào giỏ hàng"));
+        } catch (Exception e) {
+            System.err.println("Lỗi khi thêm vào giỏ hàng: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
-    private String getUserIdFromUserDetails(UserDetails userDetails) {
-        return userDetails.getUsername();
+    @PostMapping("/cart/remove")
+    public ResponseEntity<?> removeItem(HttpSession session, @RequestBody Map<String, String> body) {
+        String cartItemId = body.get("cartItemId");
+        String userId = (String) session.getAttribute("userId");
+
+        System.out.println("🔥 POST /cart/remove - cartItemId: " + cartItemId);
+
+        cartService.removeCartItem(cartItemId);
+
+        // Sau khi xóa, lấy lại giỏ hàng mới nhất trả về cho client
+        CartResponse updatedCart = cartService.getCartByUserId(userId);
+        return ResponseEntity.ok(updatedCart);
     }
 }

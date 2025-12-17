@@ -10,7 +10,6 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -22,7 +21,7 @@ public class DisplaySize {
     @Id
     @UuidGenerator
     @Column(name = "sizeID", columnDefinition = "CHAR(36)")
-    private String displaySizeID;
+    private String displaySizeID;  // Giữ nguyên field name
 
     @Column(name = "size_inch", precision = 4, scale = 2, nullable = false)
     private BigDecimal sizeInch;
@@ -48,4 +47,13 @@ public class DisplaySize {
     @CreationTimestamp
     @Column(name = "created_at")
     private Date createdAt;
+
+    // Thêm getter tùy chỉnh để tương thích với CTProducts
+    public String getSizeID() {
+        return this.displaySizeID;
+    }
+
+    public void setSizeID(String sizeID) {
+        this.displaySizeID = sizeID;
+    }
 }
