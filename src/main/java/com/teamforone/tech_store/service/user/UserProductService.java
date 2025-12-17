@@ -3,7 +3,7 @@ package com.teamforone.tech_store.service.user;
 import com.teamforone.tech_store.model.Product;
 import java.util.List;
 
-public interface ProductService {
+public interface UserProductService {
     List<Product> getAllProducts();
     Product getProductById(String id);
     Product getProductBySlug(String slug);

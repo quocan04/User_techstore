@@ -1,0 +1,64 @@
+/* TechStore - Giao diện giống CellphoneS */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Màu chủ đạo cho Logo */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: #e51c23 !important;
+}
+
+/* Màu chủ đạo cho nền và nút */
+.bg-danger, .btn-danger {
+    background-color: #e51c23 !important;
+    border-color: #e51c23 !important;
+}
+
+/* Màu chủ đạo cho chữ */
+.text-danger {
+    color: #e51c23 !important;
+}
+
+/* Style cho Card (hộp nội dung) */
+.card {
+    transition: all 0.3s;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+/* Hiệu ứng focus cho input */
+.form-control:focus {
+    border-color: #e51c23;
+    box-shadow: 0 0 0 0.2rem rgba(229, 28, 35, 0.25);
+}
+
+/* Hiệu ứng hover cho nút tìm kiếm */
+.btn-outline-danger {
+    color: #e51c23;
+    border-color: #e51c23;
+}
+
+.btn-outline-danger:hover {
+    background-color: #e51c23;
+    border-color: #e51c23;
+    color: white; /* Thêm màu chữ trắng khi hover */
+}
+
+/* Màu phụ cho badge (nếu cần) */
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+/* Định nghĩa màu đỏ cho border-start (menu profile) */
+.border-4.border-danger {
+    border-color: #e51c23 !important;
+}
+

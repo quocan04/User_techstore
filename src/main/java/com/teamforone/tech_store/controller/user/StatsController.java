@@ -1,8 +1,7 @@
 package com.teamforone.tech_store.controller.user;
 
 import com.teamforone.tech_store.model.Product;
-import com.teamforone.tech_store.service.user.ProductService;
-import lombok.RequiredArgsConstructor;
+import com.teamforone.tech_store.service.user.UserProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,12 +16,12 @@ import java.util.List;
 @RequestMapping("/stats") // Đường dẫn gốc cho tất cả các thống kê
 public class StatsController {
 
-    private final ProductService productService;
+    private final UserProductService userProductService;
 
     // Sử dụng @RequiredArgsConstructor hoặc @Autowired cho constructor để tiêm ProductService
     @Autowired
-    public StatsController(ProductService productService) {
-        this.productService = productService;
+    public StatsController(UserProductService userProductService) {
+        this.userProductService = userProductService;
     }
 
     @GetMapping("/best-sellers/{timePeriod}")
@@ -33,19 +32,19 @@ public class StatsController {
 
         switch (timePeriod.toLowerCase()) {
             case "daily":
-                bestSellers = productService.getBestSellersDaily(); // Cần định nghĩa trong Service
+                bestSellers = userProductService.getBestSellersDaily(); // Cần định nghĩa trong Service
                 statsTitle = "Sản phẩm bán chạy trong ngày";
                 break;
             case "monthly":
-                bestSellers = productService.getBestSellersMonthly(); // Cần định nghĩa trong Service
+                bestSellers = userProductService.getBestSellersMonthly(); // Cần định nghĩa trong Service
                 statsTitle = "Sản phẩm bán chạy trong tháng";
                 break;
             case "quarterly":
-                bestSellers = productService.getBestSellersQuarterly(); // Cần định nghĩa trong Service
+                bestSellers = userProductService.getBestSellersQuarterly(); // Cần định nghĩa trong Service
                 statsTitle = "Sản phẩm bán chạy trong quý";
                 break;
             case "yearly":
-                bestSellers = productService.getBestSellersYearly(); // Cần định nghĩa trong Service
+                bestSellers = userProductService.getBestSellersYearly(); // Cần định nghĩa trong Service
                 statsTitle = "Sản phẩm hot nhất năm";
                 break;
             default:

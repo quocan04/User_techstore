@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hồ sơ cá nhân</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        /* CSS TÙY CHỈNH MÀU SẮC */
+        .primary-color-bg {
+            background-color: #0078d7 !important; /* Xanh dương đậm */
+            color: white !important;
+        }
+        .primary-color-border {
+            border-color: #0078d7 !important; /* Viền xanh dương đậm */
+        }
+        .primary-color-text {
+            color: #0078d7 !important; /* Chữ xanh dương đậm */
+        }
+        .btn-primary-custom {
+            background-color: #0078d7;
+            border-color: #0078d7;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-primary-custom:hover {
+            background-color: #005fa3; /* Xanh dương nhạt hơn khi hover */
+            border-color: #005fa3;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+<div th:fragment="content">
+    <div class="container py-4">
+        <div class="row">
+
+            <div class="col-lg-3 col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light border-bottom">
+                        <h6 class="mb-0 text-muted">Tài khoản</h6>
+                    </div>
+
+                    <div class="list-group list-group-flush">
+                        <a th:href="@{/user/profile}"
+                           class="list-group-item list-group-item-action active primary-color-border border-start border-4"
+                           aria-current="true"
+                           style="background-color: #e6f0fa; color: #0078d7; font-weight: 600;">
+                            <i class="fas fa-user-circle me-2"></i> Hồ sơ
+                        </a>
+
+                        <a th:href="@{/user/address}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-map-marker-alt me-2"></i> Sổ địa chỉ
+                        </a>
+
+                        <a th:href="@{/user/change-password}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-lock me-2"></i> Đổi mật khẩu
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9 col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0 text-dark">Hồ sơ cá nhân</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div th:if="${param.passwordChanged}"
+                             class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                            <i class="fas fa-check-circle me-2"></i> Đổi mật khẩu thành công!
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                        </div>
+
+                        <form th:action="@{/user/profile/update}" th:object="${user}" method="post">
+
+                            <div class="text-center mb-5">
+                                <small class="d-block text-muted mt-3">
+                                    <i class="fas fa-info-circle me-1"></i> Tính năng thay đổi ảnh đại diện chưa hỗ trợ.
+                                </small>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Họ và tên</label>
+                                    <input type="text" class="form-control" th:field="*{fullName}" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Email</label>
+                                    <input type="email" class="form-control bg-light text-muted"
+                                           th:value="*{email}" disabled readonly>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Số điện thoại</label>
+                                    <input type="tel" class="form-control" th:field="*{phone}" required>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-lg shadow-sm btn-primary-custom">
+                                    <i class="fas fa-save me-2"></i> Cập nhật hồ sơ
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

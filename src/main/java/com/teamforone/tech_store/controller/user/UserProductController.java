@@ -3,7 +3,7 @@ package com.teamforone.tech_store.controller.user;
 import com.teamforone.tech_store.model.Product;
 import com.teamforone.tech_store.model.CTProducts;
 import com.teamforone.tech_store.model.PhoneSpecs;
-import com.teamforone.tech_store.service.user.ProductService;
+import com.teamforone.tech_store.service.user.UserProductService;
 import com.teamforone.tech_store.service.user.CTProductService;
 import com.teamforone.tech_store.service.user.PhoneSpecsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class UserProductController {
 
     @Autowired
     @Qualifier("userProductService")
-    private ProductService productService;
+    private UserProductService userProductService;
 
     @Autowired
     private PhoneSpecsService phoneSpecsService;
@@ -39,7 +39,7 @@ public class UserProductController {
         System.out.println("═══════════════════════════════════════════");
         System.out.println("🔍 [PRODUCT DETAIL] slug = " + slug);
 
-        Product product = productService.getProductBySlug(slug);
+        Product product = userProductService.getProductBySlug(slug);
 
         if (product == null) {
             System.out.println("❌ Không tìm thấy product với slug = " + slug);

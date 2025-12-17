@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team For One - Cửa hàng công nghệ</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        .site-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #0078d7;
+        }
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header-left h1 {
+            margin: 0;
+            font-size: 28px;
+            color: white;
+        }
+        .header-left p {
+            margin: 4px 0 0;
+            font-size: 14px;
+            color: white;
+        }
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .top-icon {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        .top-icon:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div th:fragment="layout(content)">
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-row">
+            <div class="header-left">
+                <h1>Team For One</h1>
+                <p>Cửa hàng đồ công nghệ hàng đầu</p>
+            </div>
+
+            <div class="top-bar-right">
+                <a th:href="@{/home}" class="top-icon">🏠 Trang chủ</a>
+                <a th:href="@{/cart}" class="top-icon">🛒 Giỏ hàng</a>
+                <a th:href="@{/auth/profile}" class="top-icon">👤 Hồ sơ</a>
+                <a th:href="@{/auth/dangxuat}" class="top-icon">🚪 Đăng xuất</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div th:replace="${content}"></div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+</body>
+</html>
